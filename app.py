@@ -132,38 +132,48 @@ def main():
 
     if submit_button and user_input:
         if user_input.lower() == 'quit':
-            st.write("Goodbye!")
-            st.session_state["conversation_history"] = ""  # Reset conversation history
-            st.session_state["user_input_history"] = []  # Reset user input history
-            st.session_state["last_response_complete"] = True  # Reset flag
-            st.experimental_rerun()
+            _handle_quit_conversation()
         elif validate_input(user_input):
-            # Update Conversation History
-            st.session_state.user_input_history.append("User: " + user_input)
-            response, complete = generate_response(user_input, "\n".join(st.session_state.user_input_history))
-            st.session_state.user_input_history.append("LLaMA: " + response)
-            st.session_state.conversation_history = "\n".join(st.session_state.user_input_history)
-            st.session_state.last_response_complete = complete
-
-            # Error Handling: Check if response is an error message
-            if response.startswith("Error occurred while processing your request:") or response.startswith("Authentication Error:"):
-                st.error(response)
-            else:
-                st.write("LLaMA:", response)
-
-        # Clear the input field by resetting the form
-        
+            _handle_user_input(user_input)
 
     # Display "Continue" Button if Last Response Was Incomplete
-    if not st.session_state.last_response_complete:
+    if not st.session_state.conversation_state['last_response_complete']:
         if st.button("Continue"):
             send_continue()
-            st.experimental_rerun()
+
+# ... (rest of your code)
+
+def _handle_quit_conversation():
+    """Reset conversation state and display goodbye message"""
+    st.write("Goodbye!")
+    st.session_state.conversation_state = {
+        'history': "",
+        'user_input_history': [],
+        'last_response_complete': True
+    }
+    st.experimental_rerun()
+
+def _handle_user_input(user_input):
+    """Update conversation state, generate response, and display it"""
+    # Update Conversation History
+    st.session_state.conversation_state['user_input_history'].append("User: " + user_input)
+    response, complete = generate_response(user_input, "\n".join(st.session_state.conversation_state['user_input_history']))
+    st.session_state.conversation_state['user_input_history'].append("LLaMA: " + response)
+    st.session_state.conversation_state['history'] = "\n".join(st.session_state.conversation_state['user_input_history'])
+    st.session_state.conversation_state['last_response_complete'] = complete
+
+    # Error Handling: Check if response is an error message
+    if response.startswith("Error occurred while processing your request:") or response.startswith("Authentication Error:"):
+        st.error(response)
+    else:
+        st.write("LLaMA:", response)
 
     # Security Improvement: Limit Conversation History Size
-    if len(st.session_state.user_input_history) > 20:
-        st.session_state.user_input_history = st.session_state.user_input_history[-20:]
-        st.session_state.conversation_history = "\n".join(st.session_state.user_input_history)
+    if len(st.session_state.conversation_state['user_input_history']) > 20:
+        st.session_state.conversation_state['user_input_history'] = st.session_state.conversation_state['user_input_history'][-20:]
+        st.session_state.conversation_state['history'] = "\n".join(st.session_state.conversation_state['user_input_history'])
+
+    # Clear the input field by resetting the form (not explicitly needed in Streamlit)
 
 if __name__ == "__main__":
     main()
