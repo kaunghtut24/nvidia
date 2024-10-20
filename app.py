@@ -3,13 +3,16 @@ from dotenv import load_dotenv
 import streamlit as st
 import requests
 
-# Step 1: Load environment variables from .env
+# Step 1: Load environment variables from .env (for local development)
 load_dotenv()
 
-# Step 2: Retrieve the NVIDIA API key from the environment variables
-nvidia_api_key = os.getenv("NVIDIA_API_KEY")
-
-if not nvidia_api_key:
+# Step 2: Retrieve the NVIDIA API key
+# For Streamlit Cloud, use st.secrets
+if "NVIDIA_API_KEY" in st.secrets:
+    nvidia_api_key = st.secrets["NVIDIA_API_KEY"]
+elif os.getenv("NVIDIA_API_KEY"):
+    nvidia_api_key = os.getenv("NVIDIA_API_KEY")  # Fallback for local development
+else:
     raise ValueError("NVIDIA_API_KEY environment variable is not set")
 
 # Configuration
