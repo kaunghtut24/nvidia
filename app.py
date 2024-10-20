@@ -148,7 +148,7 @@ def main():
                 st.write("LLaMA:", response)
 
         # Clear the input field by resetting the form
-        st.experimental_rerun()
+        
 
     # Display "Continue" Button if Last Response Was Incomplete
     if not st.session_state.last_response_complete:
