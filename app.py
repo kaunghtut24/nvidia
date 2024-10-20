@@ -106,25 +106,29 @@ def validate_input(user_input):
 
 def main():
     # Initialize Session State for Conversation History and Completion Flag
-    if 'conversation_history' not in st.session_state:
-        st.session_state.conversation_history = ""
-    if 'user_input_history' not in st.session_state:
-        st.session_state.user_input_history = []
-    if 'last_response_complete' not in st.session_state:
-        st.session_state.last_response_complete = True  # Assume initial state is complete
+    if 'conversation_state' not in st.session_state:
+        st.session_state.conversation_state = {
+            'history': "",
+            'user_input_history': [],
+            'last_response_complete': True
+        }
 
     # Streamlit Interface
     st.title("NVIDIA LLaMA Chatbot")
     st.write("Welcome to the NVIDIA LLaMA Chatbot! Type 'quit' to exit the conversation.")
 
-    # Using a form to encapsulate input and submission
-    with st.form(key='chat_form'):
-        user_input = st.text_input("You:", value="", key="user_input")
-        submit_button = st.form_submit_button(label='Send')
+    # Create a container for the chat box
+    chat_container = st.container()
 
-    # Display Conversation History
-    st.write("**Conversation History:**")
-    st.write(st.session_state.conversation_history)
+    with chat_container:
+        # Display Conversation History
+        st.write("**Conversation History:**")
+        st.write(st.session_state.conversation_state['history'])
+
+        # Chat input and submit button within a form
+        with st.form(key='chat_form'):
+            user_input = st.text_input("You:", value="", key="user_input")
+            submit_button = st.form_submit_button(label='Send')
 
     if submit_button and user_input:
         if user_input.lower() == 'quit':
