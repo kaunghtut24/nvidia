@@ -67,7 +67,7 @@ def display_message(role, content):
     if icon:
         col1, col2 = st.columns([1, 10])
         with col1:
-            st.image(icon, use_column_width=True)
+            st.image(icon, use_container_width=True)
         with col2:
             st.markdown(f"{label}: {content}")
     else:
@@ -220,7 +220,7 @@ def main():
 
     # Application Header with Logo (Remote Image from URL)
     if logo_image:
-        st.sidebar.image(logo_image, use_column_width=True)
+        st.sidebar.image(logo_image, use_container_width=True)
     else:
         st.sidebar.write("Logo could not be loaded.")
 
